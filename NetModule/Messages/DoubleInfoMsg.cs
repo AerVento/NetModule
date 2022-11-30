@@ -11,6 +11,9 @@ namespace NetModule.Messages
     /// <typeparam name="T2">The type of right information.</typeparam>
     public class DoubleInfoMsg<T1, T2> : BaseMsg where T1 : ISerializable where T2 : ISerializable
     {
+        /// <summary>
+        /// For activator use only.
+        /// </summary>
         protected DoubleInfoMsg()
         {
 
@@ -33,7 +36,10 @@ namespace NetModule.Messages
         /// The right value.
         /// </summary>
         public T2 RightValue { get; set; }
-
+        
+        /// <summary>
+        /// The length of serialized byte array.
+        /// </summary>
         public override ushort InfoLength
         {
             get
@@ -42,7 +48,13 @@ namespace NetModule.Messages
                     + LeftValue.InfoLength + RightValue.InfoLength);
             }
         }
-
+                /// <summary>
+        /// Read the data between the start index and end index, and use the data to initialize the value of current instance.
+        /// </summary>
+        /// <param name="data">The data array.</param>
+        /// <param name="startIndex">The start index of useful data.</param>
+        /// <param name="endIndex">The end index of useful data.</param>
+        /// <returns>Whether the deserialization succeed.</returns>
         public override bool Deserialize(byte[] data, int startIndex, int endIndex)
         {
             try
@@ -80,6 +92,12 @@ namespace NetModule.Messages
             }
         }
 
+        /// <summary>
+        /// Serialize this instance and write the byte data to buffer.
+        /// </summary>
+        /// <param name="buffer">The buffer to write in.</param>
+        /// <param name="startIndex">The start index of the buffer to write in. </param>
+        /// <returns>The count of bytes have written. </returns>
         public override int Serialize(ref byte[] buffer, int startIndex)
         {
             int index = startIndex;

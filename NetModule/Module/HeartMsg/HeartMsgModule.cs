@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace NetModule.Module.HeartMsg
 {
+    /// <summary>
+    /// The manager of a heart message.
+    /// </summary>
     public class HeartMsgModule
     {
         private Socket remoteSocket;
@@ -21,6 +24,11 @@ namespace NetModule.Module.HeartMsg
         /// If the thread of sending message is closed.
         /// </summary>
         public bool IsClosed { get; private set; } = true;
+        /// <summary>
+        /// To create a heart message manager with remote socket and time out time.
+        /// </summary>
+        /// <param name="socket">The remote socket to send and receive.</param>
+        /// <param name="milisecondsTimeOut">Miliseconds before the time out of remote.</param>
         public HeartMsgModule(Socket socket, int milisecondsTimeOut)
         {
             remoteSocket = socket;

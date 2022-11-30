@@ -11,12 +11,17 @@ namespace NetModule.Messages
     /// </summary>
     public class MultiInfoMsg : BaseMsg,IEnumerable<ISerializable>
     {
-        private List<ISerializable> items = new List<ISerializable>();
+        /// <summary>
+        /// The list of serializable items.
+        /// </summary>
+        protected List<ISerializable> items = new List<ISerializable>();
         /// <summary>
         /// The list of serializable items.
         /// </summary>
         public List<ISerializable> Items => items;
-
+        /// <summary>
+        /// To create MultiInfoMsg with a empty list.
+        /// </summary>
         public MultiInfoMsg()
         {
 
@@ -105,7 +110,9 @@ namespace NetModule.Messages
             get => items[index];
             set => items[index] = value;
         }
-
+        /// <summary>
+        /// The length of serialized byte array.
+        /// </summary>
         public override ushort InfoLength
         {
             get
@@ -121,7 +128,13 @@ namespace NetModule.Messages
                 return total;
             }
         }
-
+        /// <summary>
+        /// Read the data between the start index and end index, and use the data to initialize the value of current instance.
+        /// </summary>
+        /// <param name="data">The data array.</param>
+        /// <param name="startIndex">The start index of useful data.</param>
+        /// <param name="endIndex">The end index of useful data.</param>
+        /// <returns>Whether the deserialization succeed.</returns>
         public override bool Deserialize(byte[] data,int startIndex,int endIndex)
         {
             try
@@ -158,7 +171,12 @@ namespace NetModule.Messages
             }
 
         }
-
+        /// <summary>
+        /// Serialize this instance and write the byte data to buffer.
+        /// </summary>
+        /// <param name="buffer">The buffer to write in.</param>
+        /// <param name="startIndex">The start index of the buffer to write in. </param>
+        /// <returns>The count of bytes have written. </returns>
         public override int Serialize(ref byte[] buffer, int startIndex)
         {
             int index = startIndex;
@@ -195,12 +213,17 @@ namespace NetModule.Messages
     /// <typeparam name="T">The contained type of the list.</typeparam>
     public class MultiInfoMsg<T> : BaseMsg, IEnumerable<T> where T:ISerializable
     {
+        /// <summary>
+        /// The list of the T items.
+        /// </summary>
         protected List<T> items = new List<T>();
         /// <summary>
         /// The T type of the list.
         /// </summary>
         public List<T> Items => items;
-
+        /// <summary>
+        /// To create a MultiInfoMsg with a empty list.
+        /// </summary>
         public MultiInfoMsg()
         {
 
@@ -276,7 +299,9 @@ namespace NetModule.Messages
             get => items[index];
             set => items[index] = value;
         }
-
+        /// <summary>
+        /// The length of serialized byte array.
+        /// </summary>
         public override ushort InfoLength
         {
             get
@@ -292,7 +317,13 @@ namespace NetModule.Messages
                 return total;
             }
         }
-
+        /// <summary>
+        /// Read the data between the start index and end index, and use the data to initialize the value of current instance.
+        /// </summary>
+        /// <param name="data">The data array.</param>
+        /// <param name="startIndex">The start index of useful data.</param>
+        /// <param name="endIndex">The end index of useful data.</param>
+        /// <returns>Whether the deserialization succeed.</returns>
         public override bool Deserialize(byte[] data, int startIndex, int endIndex)
         {
             try
@@ -328,7 +359,12 @@ namespace NetModule.Messages
                 throw exception;
             }
         }
-
+        /// <summary>
+        /// Serialize this instance and write the byte data to buffer.
+        /// </summary>
+        /// <param name="buffer">The buffer to write in.</param>
+        /// <param name="startIndex">The start index of the buffer to write in. </param>
+        /// <returns>The count of bytes have written. </returns>
         public override int Serialize(ref byte[] buffer, int startIndex)
         {
             int index = startIndex;

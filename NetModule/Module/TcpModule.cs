@@ -36,12 +36,29 @@ namespace NetModule.Module
         public const int TIME_OUT_TIME = 10000;
 
 
-        
+        /// <summary>
+        /// The remote ip end point.
+        /// </summary>
         public IPEndPoint Remote => remote;
+        /// <summary>
+        /// The count of bytes of unread messages.
+        /// </summary>
         public int Available => receivedMsg.Count;
+        /// <summary>
+        /// Whether the remote haven't send message for a time. 
+        /// </summary>
         public bool IsTimeOut => heartMsgManager.IsTimeOut;
+        /// <summary>
+        /// Whether the module can send messages.
+        /// </summary>
         public bool CanSend => mode == ModuleMode.Both || mode == ModuleMode.Send;
+        /// <summary>
+        /// Whether the module can receive messages.
+        /// </summary>
         public bool CanReceive => mode == ModuleMode.Both || mode == ModuleMode.Receive;
+        /// <summary>
+        /// The current status of the module.
+        /// </summary>
         public ModuleStatus Status => status;
         
 
@@ -52,17 +69,15 @@ namespace NetModule.Module
         /// <param name="port">The port of remote end point.</param>
         /// <param name="mode">The operation mode of module.</param>
         /// <param name="activeHeartMsg">Whether to send heart message. </param>
-        public TcpModule(string ipAddress,int port, ModuleMode mode, bool activeHeartMsg)
+        public TcpModule(string ipAddress, int port, ModuleMode mode, bool activeHeartMsg)
         {
             remote = new IPEndPoint(IPAddress.Parse(ipAddress), port);
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             
             this.mode = mode;
-            if (activeHeartMsg)
-            {
-                heartMsgManager = new HeartMsg.HeartMsgModule(socket,TIME_OUT_TIME);
-                isSendingHeartMsgActivated = activeHeartMsg;
-            }
+            isSendingHeartMsgActivated = activeHeartMsg;
+
+            heartMsgManager = new HeartMsg.HeartMsgModule(socket, TIME_OUT_TIME);
             
             status = ModuleStatus.Initialized;
         }
@@ -70,6 +85,7 @@ namespace NetModule.Module
         /// Use a socket which already connected to remote to initialize the module.
         /// </summary>
         /// <param name="connectedSocket">A socket that is already connected to remote.</param>
+        /// <param name="mode">The mode of the module.</param>
         /// <param name="activeHeartMsg">Whether to send heart message.</param>
         /// <exception cref="InvalidOperationException"> The socket is not connected. </exception>
         public TcpModule(Socket connectedSocket, ModuleMode mode , bool activeHeartMsg)
@@ -85,43 +101,33 @@ namespace NetModule.Module
             {
                 throw new InvalidOperationException("Present socket haven't connected to remote yet.");
             }
-            if (activeHeartMsg)
-            {
-                heartMsgManager = new HeartMsg.HeartMsgModule(socket, TIME_OUT_TIME);
-                isSendingHeartMsgActivated = activeHeartMsg;
-            }
+            isSendingHeartMsgActivated = activeHeartMsg;
+
+            heartMsgManager = new HeartMsg.HeartMsgModule(socket, TIME_OUT_TIME);
         }
 
         /// <summary>
-        /// A thread function to receive byte array.
+        /// Rececive byte array and analyse it to a message instance.
         /// </summary>
-        private void SocketReceive(object obj)
+        private void SocketReceive()
         {
             try
-            {   
-                while (status == ModuleStatus.Connecting)
+            {
+                int length = socket.Receive(receivingCaches, cacheIndex, cacheBufferSize - cacheIndex, SocketFlags.None);
+                int result = AnalysePackages(length + cacheIndex);
+                if (result == 0)
                 {
-                    if (socket.Available > 0)
-                    {
-                        int length = socket.Receive(receivingCaches, cacheIndex, cacheBufferSize - cacheIndex, SocketFlags.None);
-                        int result = AnalysePackages(length + cacheIndex);
-                        if (result == 0)
-                        {
-                            cacheIndex = 0;
-                        }
-                        else
-                        {
-                            //Copy the info which cannot be analysed to the front of array.
-                            Array.Copy(receivingCaches, length + cacheIndex - result, receivingCaches, 0, result);
+                    cacheIndex = 0;
+                }
+                else
+                {
+                    //Copy the info which cannot be analysed to the front of array.
+                    Array.Copy(receivingCaches, length + cacheIndex - result, receivingCaches, 0, result);
 
-                            cacheIndex = result;
-                        }
-                    }
-                    else
-                        Thread.Sleep(50);
+                    cacheIndex = result;
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 onError?.Invoke(e);
             }
@@ -229,7 +235,18 @@ namespace NetModule.Module
             else
                 throw new InvalidOperationException("The module is not in send mode.");
         }
-        
+
+        private bool taskFlag = false;//if there is already a anaylsing task is executing.
+        /// <summary>
+        /// To turn message cache to message.
+        /// </summary>
+        private void RefreshMsg()
+        {
+            taskFlag = true;
+            while (socket.Available > 0)
+                SocketReceive();
+            taskFlag = false;
+        }
         /// <summary>
         /// Receive a earliest unread message.
         /// </summary>
@@ -241,7 +258,28 @@ namespace NetModule.Module
             {
                 if (receivedMsg.Count > 0)
                 {
+                    if (socket.Available > 0 && taskFlag == false)
+                        Task.Run(RefreshMsg);
+
                     return receivedMsg.Dequeue();
+                }
+                else if(socket.Available > 0 && taskFlag == false)
+                {
+                    Task<BaseMsg> receiveOne = new Task<BaseMsg>(() =>
+                    {
+                        taskFlag = true;
+                        while (receivedMsg.Count == 0)
+                            SocketReceive();
+                        taskFlag = false;
+                        return receivedMsg.Dequeue();
+                    });
+                    receiveOne.Start();
+                    receiveOne.ContinueWith((task) =>
+                    {
+                        RefreshMsg();
+                    });
+                    receiveOne.Wait();
+                    return receiveOne.Result;
                 }
                 else
                 {
@@ -261,9 +299,7 @@ namespace NetModule.Module
         {
             if (CanReceive)
             {
-                if (receivedMsg.Count == 0)
-                    return null;
-                else
+                if (receivedMsg.Count > 0)
                 {
                     BaseMsg[] msgs = new BaseMsg[receivedMsg.Count];
                     int i = 0;
@@ -274,6 +310,13 @@ namespace NetModule.Module
                     }
                     return msgs;
                 }
+                else if (socket.Available > 0 && taskFlag == false)
+                {
+                    Task.Run(RefreshMsg);
+                    return null;
+                }
+                else
+                    return null;
             }
             else
                 throw new InvalidOperationException("The module is not in receive mode.");
@@ -299,8 +342,8 @@ namespace NetModule.Module
                 if (status == ModuleStatus.Initialized)
                 {
                     socket.Connect(remote);
-                    if(mode == ModuleMode.Receive)
-                        ThreadPool.QueueUserWorkItem(SocketReceive);
+                    //if(mode == ModuleMode.Receive)
+                    //    ThreadPool.QueueUserWorkItem(SocketReceive);
                     status = ModuleStatus.Connecting;
                 }
                 if (isSendingHeartMsgActivated && heartMsgManager.IsClosed)

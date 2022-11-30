@@ -7,3 +7,4 @@ D:\GitHubRepos\NetModule\NetModule\obj\Release\netcoreapp3.1\NetModule.AssemblyI
 D:\GitHubRepos\NetModule\NetModule\obj\Release\netcoreapp3.1\NetModule.csproj.CoreCompileInputs.cache
 D:\GitHubRepos\NetModule\NetModule\obj\Release\netcoreapp3.1\NetModule.dll
 D:\GitHubRepos\NetModule\NetModule\obj\Release\netcoreapp3.1\NetModule.pdb
+D:\GitHubRepos\NetModule\NetModule\bin\Release\netcoreapp3.1\NetModule.xml

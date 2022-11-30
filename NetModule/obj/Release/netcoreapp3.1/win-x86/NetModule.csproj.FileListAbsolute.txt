@@ -1,0 +1,9 @@
+D:\GitHubRepos\NetModule\NetModule\bin\Release\netcoreapp3.1\win-x86\NetModule.deps.json
+D:\GitHubRepos\NetModule\NetModule\bin\Release\netcoreapp3.1\win-x86\NetModule.dll
+D:\GitHubRepos\NetModule\NetModule\bin\Release\netcoreapp3.1\win-x86\NetModule.pdb
+D:\GitHubRepos\NetModule\NetModule\obj\Release\netcoreapp3.1\win-x86\NetModule.AssemblyInfoInputs.cache
+D:\GitHubRepos\NetModule\NetModule\obj\Release\netcoreapp3.1\win-x86\NetModule.AssemblyInfo.cs
+D:\GitHubRepos\NetModule\NetModule\obj\Release\netcoreapp3.1\win-x86\NetModule.csproj.CoreCompileInputs.cache
+D:\GitHubRepos\NetModule\NetModule\obj\Release\netcoreapp3.1\win-x86\NetModule.dll
+D:\GitHubRepos\NetModule\NetModule\obj\Release\netcoreapp3.1\win-x86\NetModule.pdb
+D:\GitHubRepos\NetModule\NetModule\bin\Release\netcoreapp3.1\win-x86\NetModule.xml

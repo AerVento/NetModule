@@ -43,10 +43,24 @@ namespace NetModule.Messages
         /// </summary>
         public int Length => Protocol.Length + InfoLength + SIZE_OF_LENGTH + SIZE_OF_MSGID;
 
+        /// <summary>
+        /// The length of serialized byte array.
+        /// </summary>
         public abstract ushort InfoLength { get; }
-
+        /// <summary>
+        /// Serialize this instance and write the byte data to buffer.
+        /// </summary>
+        /// <param name="buffer">The buffer to write in.</param>
+        /// <param name="startIndex">The start index of the buffer to write in. </param>
+        /// <returns>The count of bytes have written. </returns>
         public abstract int Serialize(ref byte[] buffer, int startIndex);
-        
+        /// <summary>
+        /// Read the data between the start index and end index, and use the data to initialize the value of current instance.
+        /// </summary>
+        /// <param name="data">The data array.</param>
+        /// <param name="startIndex">The start index of useful data.</param>
+        /// <param name="endIndex">The end index of useful data.</param>
+        /// <returns>Whether the deserialization succeed.</returns>
         public abstract bool Deserialize(byte[] data, int startIndex, int endIndex);
         
         /// <summary>
@@ -92,14 +106,19 @@ namespace NetModule.Messages
             
             return bytes;
         }
-        protected static object GetInstanceOf(Type t)
+        /// <summary>
+        /// Get a instance of a type. The type should be a value type or a class type implements ISerializable.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>The object instance.</returns>
+        protected static object GetInstanceOf(Type type)
         {
             try
             {
-                return Activator.CreateInstance(t);
+                return Activator.CreateInstance(type);
             }
             catch { }
-            return IdManager.GetConstructor(t).Invoke(new object[0]);
+            return IdManager.GetConstructor(type).Invoke(new object[0]);
         }
 
         /// <summary>
@@ -156,8 +175,20 @@ namespace NetModule.Messages
         /// The list contains the types during the deserialization steps.
         /// </summary>
         public Stack<Type> deserializationChain = new Stack<Type>();
+        /// <summary>
+        /// Initialize with a message.
+        /// </summary>
+        /// <param name="msg">Message</param>
         public DeserializeException(string msg) : base(msg) { }
+        /// <summary>
+        /// Initialize with a message and real exception.
+        /// </summary>
+        /// <param name="msg">Message</param>
+        /// <param name="exception">Real exception of deserialize exception.</param>
         public DeserializeException(string msg, Exception exception) : base(msg) { realException = exception; }
+        /// <summary>
+        /// Empty constructor.
+        /// </summary>
         public DeserializeException() { }
     }
 }

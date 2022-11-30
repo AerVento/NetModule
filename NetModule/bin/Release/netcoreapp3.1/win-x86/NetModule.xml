@@ -1,0 +1,1023 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>NetModule</name>
+    </assembly>
+    <members>
+        <member name="T:NetModule.Messages.BaseMsg">
+            <summary>
+            A base class for all messages.
+            A constructor with no parameters are REQUIRED in sub classes. ( No matter it is public or private)
+            Or a exception will be thrown during the deserialization of the sub class. 
+            </summary>
+        </member>
+        <member name="F:NetModule.Messages.BaseMsg.SIZE_OF_MSGID">
+            <summary>
+            The initial bytes count of message id in a message byte array.
+            Message with generic type will have a longer id.
+            </summary>
+        </member>
+        <member name="F:NetModule.Messages.BaseMsg.SIZE_OF_LENGTH">
+            <summary>
+            The bytes count of message length in a message byte array.
+            </summary>
+        </member>
+        <member name="F:NetModule.Messages.BaseMsg.lengthOffset">
+            <summary>
+            The offset of total length data in a serialized byte array.
+            </summary>
+        </member>
+        <member name="P:NetModule.Messages.BaseMsg.Protocol">
+            <summary>
+            The protocol to encoding the byte array.
+            </summary>
+        </member>
+        <member name="P:NetModule.Messages.BaseMsg.IdManager">
+            <summary>
+            The strategy id manager of giving serializable item id.
+            </summary>
+        </member>
+        <member name="P:NetModule.Messages.BaseMsg.Length">
+            <summary>
+            The initial length of sendable message byte array.
+            Message with generic will have a longer length.
+            </summary>
+        </member>
+        <member name="P:NetModule.Messages.BaseMsg.InfoLength">
+            <summary>
+            The length of serialized byte array.
+            </summary>
+        </member>
+        <member name="M:NetModule.Messages.BaseMsg.Serialize(System.Byte[]@,System.Int32)">
+            <summary>
+            Serialize this instance and write the byte data to buffer.
+            </summary>
+            <param name="buffer">The buffer to write in.</param>
+            <param name="startIndex">The start index of the buffer to write in. </param>
+            <returns>The count of bytes have written. </returns>
+        </member>
+        <member name="M:NetModule.Messages.BaseMsg.Deserialize(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Read the data between the start index and end index, and use the data to initialize the value of current instance.
+            </summary>
+            <param name="data">The data array.</param>
+            <param name="startIndex">The start index of useful data.</param>
+            <param name="endIndex">The end index of useful data.</param>
+            <returns>Whether the deserialization succeed.</returns>
+        </member>
+        <member name="M:NetModule.Messages.BaseMsg.GetBytes">
+            <summary>
+            To transform this message to a sendable byte array.
+            </summary>
+            <exception cref="T:System.IndexOutOfRangeException"> Thrown when the info length is too small for containing key information.</exception>
+            <exception cref="T:System.NotSupportedException">Thrown when the current type contained a generic type that cannot be serialized.</exception>
+            <returns>A serialized sendable byte array.</returns>
+        </member>
+        <member name="M:NetModule.Messages.BaseMsg.GetInstanceOf(System.Type)">
+            <summary>
+            Get a instance of a type. The type should be a value type or a class type implements ISerializable.
+            </summary>
+            <param name="type">The type.</param>
+            <returns>The object instance.</returns>
+        </member>
+        <member name="M:NetModule.Messages.BaseMsg.GetInstance(System.Byte[])">
+            <summary>
+            To transform received byte array to a instance of base message.
+            </summary>
+            <param name="data">The given byte array.</param>
+            <returns>A instance of message.</returns>
+            <exception cref="T:System.MissingMethodException">Thrown when the class of current message id doesn't contain a constructor with no parameters.</exception>
+            <exception cref="T:NetModule.Messages.DeserializeException">Thrown when deserialization of key information failed.</exception>
+        </member>
+        <member name="M:NetModule.Messages.BaseMsg.GetInstance(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            To transform received byte array to a instance of base message.
+            If the message of current id doesn't contain a constructor with no parameters, a NullReferenceException will be thrown.
+            </summary>
+            <param name="data">The data byte array..</param>
+            <param name="offset">The offset of byte array.</param>
+            <param name="length">The length of message.</param>
+            <returns>A instance of message.</returns>
+            <exception cref="T:System.MissingMethodException">Thrown when the class of current message id doesn't contain a constructor with no parameters.</exception>
+            <exception cref="T:NetModule.Messages.DeserializeException">Thrown when deserialization of key information failed.</exception>
+        </member>
+        <member name="T:NetModule.Messages.DeserializeException">
+            <summary>
+            The exception that is thrown during deserializaion.
+            </summary>
+        </member>
+        <member name="F:NetModule.Messages.DeserializeException.failedArray">
+            <summary>
+            The byte array that failed for deserialization.
+            </summary>
+        </member>
+        <member name="F:NetModule.Messages.DeserializeException.realException">
+            <summary>
+            The real exception occurred during the deserialization.
+            </summary>
+        </member>
+        <member name="F:NetModule.Messages.DeserializeException.deserializationChain">
+            <summary>
+            The list contains the types during the deserialization steps.
+            </summary>
+        </member>
+        <member name="M:NetModule.Messages.DeserializeException.#ctor(System.String)">
+            <summary>
+            Initialize with a message.
+            </summary>
+            <param name="msg">Message</param>
+        </member>
+        <member name="M:NetModule.Messages.DeserializeException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initialize with a message and real exception.
+            </summary>
+            <param name="msg">Message</param>
+            <param name="exception">Real exception of deserialize exception.</param>
+        </member>
+        <member name="M:NetModule.Messages.DeserializeException.#ctor">
+            <summary>
+            Empty constructor.
+            </summary>
+        </member>
+        <member name="T:NetModule.Messages.Double">
+            <summary>
+            This struct is serializable version of System.Double .
+            </summary>
+        </member>
+        <member name="P:NetModule.Messages.Double.Value">
+            <summary>
+            The value.
+            </summary>
+        </member>
+        <member name="T:NetModule.Messages.DoubleInfoMsg`2">
+            <summary>
+            This message class contained two extra information in type T1 and type T2.
+            </summary>
+            <typeparam name="T1">The type of left information.</typeparam>
+            <typeparam name="T2">The type of right information.</typeparam>
+        </member>
+        <member name="M:NetModule.Messages.DoubleInfoMsg`2.#ctor">
+            <summary>
+            For activator use only.
+            </summary>
+        </member>
+        <member name="M:NetModule.Messages.DoubleInfoMsg`2.#ctor(`0,`1)">
+            <summary>
+            Initial the left value and the right value.
+            </summary>
+            <param name="leftValue">The left value.</param>
+            <param name="rightValue">The right value.</param>
+        </member>
+        <member name="P:NetModule.Messages.DoubleInfoMsg`2.LeftValue">
+            <summary>
+            The left value.
+            </summary>
+        </member>
+        <member name="P:NetModule.Messages.DoubleInfoMsg`2.RightValue">
+            <summary>
+            The right value.
+            </summary>
+        </member>
+        <member name="P:NetModule.Messages.DoubleInfoMsg`2.InfoLength">
+            <summary>
+            The length of serialized byte array.
+            </summary>
+        </member>
+        <member name="M:NetModule.Messages.DoubleInfoMsg`2.Deserialize(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Read the data between the start index and end index, and use the data to initialize the value of current instance.
+            </summary>
+            <param name="data">The data array.</param>
+            <param name="startIndex">The start index of useful data.</param>
+            <param name="endIndex">The end index of useful data.</param>
+            <returns>Whether the deserialization succeed.</returns>
+        </member>
+        <member name="M:NetModule.Messages.DoubleInfoMsg`2.Serialize(System.Byte[]@,System.Int32)">
+            <summary>
+            Serialize this instance and write the byte data to buffer.
+            </summary>
+            <param name="buffer">The buffer to write in.</param>
+            <param name="startIndex">The start index of the buffer to write in. </param>
+            <returns>The count of bytes have written. </returns>
+        </member>
+        <member name="T:NetModule.Messages.EmptyMsg">
+            <summary>
+            A empty message without extra information.
+            </summary>
+        </member>
+        <member name="T:NetModule.Messages.Float">
+            <summary>
+            This struct is serializable version of System.Single .
+            </summary>
+        </member>
+        <member name="P:NetModule.Messages.Float.Value">
+            <summary>
+            The value.
+            </summary>
+        </member>
+        <member name="T:NetModule.Messages.Int32">
+            <summary>
+            This struct is serializable version of System.Int32 .
+            </summary>
+        </member>
+        <member name="P:NetModule.Messages.Int32.Value">
+            <summary>
+            The value.
+            </summary>
+        </member>
+        <member name="T:NetModule.Messages.Internal.ISerializableItemIdManager">
+            <summary>
+            A strategy for giving serializable item a id.
+            Every non-abstract class implements the interface ISerializable can be given a unique id through this interface.
+            <see cref="T:NetModule.Messages.ISerializable"/>
+            </summary>
+        </member>
+        <member name="M:NetModule.Messages.Internal.ISerializableItemIdManager.GetType(System.Int32)">
+            <summary>
+            To get a type of serializable item by message id.
+            </summary>
+            <param name="id">The id of serializable item.</param>
+            <returns></returns>The type of serializable item with specfic item id.
+            <exception cref="T:System.NotSupportedException">Thrown when id is undefined. </exception>
+        </member>
+        <member name="M:NetModule.Messages.Internal.ISerializableItemIdManager.GetGenericType(System.Byte[],System.Int32,System.Int32@)">
+            <summary>
+            Get a specific generic type from current type data.
+            </summary>
+            <param name="msgData">The message data.</param>
+            <param name="startIndex">The start index of generic type id data.</param>
+            /// <param name="endIndex">The output end index of generic type id data.</param>
+            <returns>The generic type.</returns>
+        </member>
+        <member name="M:NetModule.Messages.Internal.ISerializableItemIdManager.GetId(System.Type)">
+            <summary>
+            To get id of serializable item by a type of class.
+            </summary>
+            <param name="type">The type of the class which implements the interface ISerializable.</param>
+            <returns>The id of the serializable item.</returns>
+            <exception cref="T:System.NotSupportedException">Thrown when the class in this type doesn't implements the interface ISerializable. </exception>
+        </member>
+        <member name="M:NetModule.Messages.Internal.ISerializableItemIdManager.GetGenericId(System.Type)">
+            <summary>
+            To get a byte array which presentes the id of current generic type.
+            </summary>
+            <param name="type">The generic type.</param>
+            <returns>The byte array presents the generic type.</returns>
+            <exception cref="T:System.NotSupportedException">Thrown when the class in this type contained a generic type that doesn't implements the interface ISerializable. </exception>
+        </member>
+        <member name="M:NetModule.Messages.Internal.ISerializableItemIdManager.GetConstructor(System.Int32)">
+            <summary>
+            Get a parameterless constructor of serializable item by id.
+            When the type is generic type, the constructor will be a generic defination.
+            </summary>
+            <param name="id">The id of the serializable item.</param>
+            <returns>A generic type of constructor if the type is generic type, or just empty constructor.</returns>
+            <exception cref="T:System.MissingMethodException">Thrown when no paramterless constructor is defined.</exception>
+            <exception cref="T:System.NotSupportedException">Thrown when id is undefined. </exception>
+        </member>
+        <member name="M:NetModule.Messages.Internal.ISerializableItemIdManager.GetConstructor(System.Type)">
+            <summary>
+            Get a parameterless constructor of serializable item by type.
+            When the type is generic type, the constructor will be a generic defination.
+            </summary>
+            <param name="type">The type of the serializable item.</param>
+            <returns>A generic type of constructor if the type is generic type defination, or just empty constructor.</returns>
+            <exception cref="T:System.MissingMethodException">Thrown when no paramterless constructor is defined.</exception>
+            <exception cref="T:System.NotSupportedException">Thrown when the class in this type doesn't implements the interface ISerializable. </exception>
+        </member>
+        <member name="T:NetModule.Messages.ISerializable">
+            <summary>
+            A interface for all serializable items.
+            Every non-abstract class implements this interface should define a paramterless constructor.
+            </summary>
+        </member>
+        <member name="P:NetModule.Messages.ISerializable.InfoLength">
+            <summary>
+            The length of serialized byte array.
+            </summary>
+        </member>
+        <member name="M:NetModule.Messages.ISerializable.Serialize(System.Byte[]@,System.Int32)">
+            <summary>
+            Serialize this instance and write the byte data to buffer.
+            </summary>
+            <param name="buffer">The buffer to write in.</param>
+            <param name="startIndex">The start index of the buffer to write in. </param>
+            <returns>The count of bytes have written. </returns>
+        </member>
+        <member name="M:NetModule.Messages.ISerializable.Deserialize(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Read the data between the start index and end index, and use the data to initialize the value of current instance.
+            </summary>
+            <param name="data">The data array.</param>
+            <param name="startIndex">The start index of useful data.</param>
+            <param name="endIndex">The end index of useful data.</param>
+            <returns>Whether the deserialization succeed.</returns>
+        </member>
+        <member name="T:NetModule.Messages.MultiInfoMsg">
+            <summary>
+            This class contained a list of serializable items to present extra information.
+            </summary>
+        </member>
+        <member name="F:NetModule.Messages.MultiInfoMsg.items">
+            <summary>
+            The list of serializable items.
+            </summary>
+        </member>
+        <member name="P:NetModule.Messages.MultiInfoMsg.Items">
+            <summary>
+            The list of serializable items.
+            </summary>
+        </member>
+        <member name="M:NetModule.Messages.MultiInfoMsg.#ctor">
+            <summary>
+            To create MultiInfoMsg with a empty list.
+            </summary>
+        </member>
+        <member name="M:NetModule.Messages.MultiInfoMsg.#ctor(System.Collections.Generic.List{NetModule.Messages.ISerializable})">
+            <summary>
+            To initialize the list with a list of serializable items.
+            </summary>
+            <param name="items">A list of serializable items to be added.</param>
+        </member>
+        <member name="M:NetModule.Messages.MultiInfoMsg.#ctor(NetModule.Messages.ISerializable[])">
+            <summary>
+            To initialize the list with a list of serializable items.
+            </summary>
+            <param name="items">A list of serializable items to be added.</param>
+        </member>
+        <member name="P:NetModule.Messages.MultiInfoMsg.Count">
+            <summary>
+            The count of the items.
+            </summary>
+        </member>
+        <member name="M:NetModule.Messages.MultiInfoMsg.Add(NetModule.Messages.ISerializable)">
+            <summary>
+            Add a serializable item to list.
+            </summary>
+            <param name="item">The T item.</param>
+        </member>
+        <member name="M:NetModule.Messages.MultiInfoMsg.Remove(NetModule.Messages.ISerializable)">
+            <summary>
+            Remove a serializable item from list.
+            </summary>
+            <param name="item">The item to be removed.</param>
+        </member>
+        <member name="M:NetModule.Messages.MultiInfoMsg.RemoveAt(System.Int32)">
+            <summary>
+            Remove a serializable item by index.
+            </summary>
+            <param name="index">The index of item to be removed.</param>
+        </member>
+        <member name="M:NetModule.Messages.MultiInfoMsg.Contains(NetModule.Messages.ISerializable)">
+            <summary>
+            Whether the list contained the item.
+            </summary>
+            <param name="item">The item to search.</param>
+        </member>
+        <member name="M:NetModule.Messages.MultiInfoMsg.Clear">
+            <summary>
+            To clear the list.
+            </summary>
+        </member>
+        <member name="M:NetModule.Messages.MultiInfoMsg.ForEach(System.Action{NetModule.Messages.ISerializable})">
+            <summary>
+            To iterate the list with action.
+            </summary>
+            <param name="action">The action.</param>
+        </member>
+        <member name="M:NetModule.Messages.MultiInfoMsg.Find(System.Predicate{NetModule.Messages.ISerializable})">
+            <summary>
+            To find a item in list which make the delegate "match" returns true.
+            </summary>
+            <param name="match">The delagete.</param>
+        </member>
+        <member name="M:NetModule.Messages.MultiInfoMsg.Get``1(System.Int32)">
+            <summary>
+            Get a item and transform it to given type.
+            </summary>
+            <typeparam name="T">The given type.</typeparam>
+            <param name="index">The index of the item.</param>
+            <returns>The item with specific type, -or- null if the transform failed.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException"> index is less than 0. -or- index is equal to or greater than count.</exception>
+        </member>
+        <member name="P:NetModule.Messages.MultiInfoMsg.Item(System.Int32)">
+            <summary>
+            Gets or sets the item at the specified index.
+            </summary>
+            <param name="index">The index.</param>
+            <returns>The item.</returns>
+        </member>
+        <member name="P:NetModule.Messages.MultiInfoMsg.InfoLength">
+            <summary>
+            The length of serialized byte array.
+            </summary>
+        </member>
+        <member name="M:NetModule.Messages.MultiInfoMsg.Deserialize(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Read the data between the start index and end index, and use the data to initialize the value of current instance.
+            </summary>
+            <param name="data">The data array.</param>
+            <param name="startIndex">The start index of useful data.</param>
+            <param name="endIndex">The end index of useful data.</param>
+            <returns>Whether the deserialization succeed.</returns>
+        </member>
+        <member name="M:NetModule.Messages.MultiInfoMsg.Serialize(System.Byte[]@,System.Int32)">
+            <summary>
+            Serialize this instance and write the byte data to buffer.
+            </summary>
+            <param name="buffer">The buffer to write in.</param>
+            <param name="startIndex">The start index of the buffer to write in. </param>
+            <returns>The count of bytes have written. </returns>
+        </member>
+        <member name="T:NetModule.Messages.MultiInfoMsg`1">
+            <summary>
+            This class contained a list of specific type which can be serialized to present extra information.
+            </summary>
+            <typeparam name="T">The contained type of the list.</typeparam>
+        </member>
+        <member name="F:NetModule.Messages.MultiInfoMsg`1.items">
+            <summary>
+            The list of the T items.
+            </summary>
+        </member>
+        <member name="P:NetModule.Messages.MultiInfoMsg`1.Items">
+            <summary>
+            The T type of the list.
+            </summary>
+        </member>
+        <member name="M:NetModule.Messages.MultiInfoMsg`1.#ctor">
+            <summary>
+            To create a MultiInfoMsg with a empty list.
+            </summary>
+        </member>
+        <member name="M:NetModule.Messages.MultiInfoMsg`1.#ctor(System.Collections.Generic.List{`0})">
+            <summary>
+            To initialize the list with a list of T items.
+            </summary>
+            <param name="items">The list of T items.</param>
+        </member>
+        <member name="M:NetModule.Messages.MultiInfoMsg`1.#ctor(`0[])">
+            <summary>
+            To initialize the list with a list of T items.
+            </summary>
+            <param name="items">The list of T items.</param>
+        </member>
+        <member name="P:NetModule.Messages.MultiInfoMsg`1.Count">
+            <summary>
+            The count of the list.
+            </summary>
+        </member>
+        <member name="M:NetModule.Messages.MultiInfoMsg`1.Add(`0)">
+            <summary>
+            Add a T item to list.
+            </summary>
+            <param name="item">The T item.</param>
+        </member>
+        <member name="M:NetModule.Messages.MultiInfoMsg`1.Remove(`0)">
+            <summary>
+            Remove a T item from list.
+            </summary>
+            <param name="item">The item to be removed.</param>
+        </member>
+        <member name="M:NetModule.Messages.MultiInfoMsg`1.RemoveAt(System.Int32)">
+            <summary>
+            Remove a T item by index.
+            </summary>
+            <param name="index">The index of item to be removed.</param>
+        </member>
+        <member name="M:NetModule.Messages.MultiInfoMsg`1.Contains(`0)">
+            <summary>
+            Whether the list contained the item.
+            </summary>
+            <param name="item">The item to search.</param>
+        </member>
+        <member name="M:NetModule.Messages.MultiInfoMsg`1.Clear">
+            <summary>
+            To clear the list.
+            </summary>
+        </member>
+        <member name="M:NetModule.Messages.MultiInfoMsg`1.ForEach(System.Action{`0})">
+            <summary>
+            To iterate the list with action.
+            </summary>
+            <param name="action">The action.</param>
+        </member>
+        <member name="M:NetModule.Messages.MultiInfoMsg`1.Find(System.Predicate{`0})">
+            <summary>
+            To find a item in list which make the delegate "match" returns true.
+            </summary>
+            <param name="match">The delagete.</param>
+        </member>
+        <member name="P:NetModule.Messages.MultiInfoMsg`1.Item(System.Int32)">
+            <summary>
+            Gets or sets the item at the specified index.
+            </summary>
+            <param name="index">The index.</param>
+            <returns>The T item.</returns>
+        </member>
+        <member name="P:NetModule.Messages.MultiInfoMsg`1.InfoLength">
+            <summary>
+            The length of serialized byte array.
+            </summary>
+        </member>
+        <member name="M:NetModule.Messages.MultiInfoMsg`1.Deserialize(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Read the data between the start index and end index, and use the data to initialize the value of current instance.
+            </summary>
+            <param name="data">The data array.</param>
+            <param name="startIndex">The start index of useful data.</param>
+            <param name="endIndex">The end index of useful data.</param>
+            <returns>Whether the deserialization succeed.</returns>
+        </member>
+        <member name="M:NetModule.Messages.MultiInfoMsg`1.Serialize(System.Byte[]@,System.Int32)">
+            <summary>
+            Serialize this instance and write the byte data to buffer.
+            </summary>
+            <param name="buffer">The buffer to write in.</param>
+            <param name="startIndex">The start index of the buffer to write in. </param>
+            <returns>The count of bytes have written. </returns>
+        </member>
+        <member name="T:NetModule.Messages.SendingProtocol.FormProtocol">
+            <summary>
+            Use extra data to define a protocol when passing information.
+            </summary>
+        </member>
+        <member name="P:NetModule.Messages.SendingProtocol.FormProtocol.Identifier">
+            <summary>
+            The msg identifier in the byte array.
+            </summary>
+        </member>
+        <member name="P:NetModule.Messages.SendingProtocol.FormProtocol.Version">
+            <summary>
+            The version of the protocol.
+            </summary>
+        </member>
+        <member name="M:NetModule.Messages.SendingProtocol.FormProtocol.GetCheckcode(System.Byte[],System.Int32)">
+            <summary>
+            Calculate the check code of byte array.
+            </summary>
+            <param name="data"> All bytes used to calculate the check code.</param>
+            <param name="count"> The count of bytes.</param>
+            <returns>The code</returns>
+        </member>
+        <member name="P:NetModule.Messages.SendingProtocol.FormProtocol.Length">
+            <summary>
+            Return the length of the protocol elements.
+            </summary>
+        </member>
+        <member name="T:NetModule.Messages.SingleInfoMsg`1">
+            <summary>
+            This class contains a generic type of extra information.
+            </summary>
+            <typeparam name="T">The type of single information.</typeparam>
+        </member>
+        <member name="F:NetModule.Messages.SingleInfoMsg`1.content">
+            <summary>
+            The private content data.
+            </summary>
+        </member>
+        <member name="P:NetModule.Messages.SingleInfoMsg`1.Content">
+            <summary>
+            The information of message.
+            </summary>
+        </member>
+        <member name="M:NetModule.Messages.SingleInfoMsg`1.#ctor">
+            <summary>
+            For activator use only.
+            </summary>
+        </member>
+        <member name="M:NetModule.Messages.SingleInfoMsg`1.#ctor(`0)">
+            <summary>
+            Use the info to initialize this message class.
+            </summary>
+            <param name="info">The extra information of type T.</param>
+        </member>
+        <member name="P:NetModule.Messages.SingleInfoMsg`1.InfoLength">
+            <summary>
+            The length of serialized byte array.
+            </summary>
+        </member>
+        <member name="M:NetModule.Messages.SingleInfoMsg`1.Deserialize(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Read the data between the start index and end index, and use the data to initialize the value of current instance.
+            </summary>
+            <param name="data">The data array.</param>
+            <param name="startIndex">The start index of useful data.</param>
+            <param name="endIndex">The end index of useful data.</param>
+            <returns>Whether the deserialization succeed.</returns>
+        </member>
+        <member name="M:NetModule.Messages.SingleInfoMsg`1.Serialize(System.Byte[]@,System.Int32)">
+            <summary>
+            Serialize this instance and write the byte data to buffer.
+            </summary>
+            <param name="buffer">The buffer to write in.</param>
+            <param name="startIndex">The start index of the buffer to write in. </param>
+            <returns>The count of bytes have written. </returns>
+        </member>
+        <member name="T:NetModule.Messages.StringMsg">
+            <summary>
+            This message class contained a string to present extra information.
+            </summary>
+        </member>
+        <member name="F:NetModule.Messages.StringMsg.datas">
+            <summary>
+            The byte data of string.
+            </summary>
+        </member>
+        <member name="F:NetModule.Messages.StringMsg.encoding">
+            <summary>
+            The encoding of the string.
+            </summary>
+        </member>
+        <member name="P:NetModule.Messages.StringMsg.String">
+            <summary>
+            The string information.
+            </summary>
+        </member>
+        <member name="M:NetModule.Messages.StringMsg.#ctor">
+            <summary>
+            For activator use only.
+            </summary>
+        </member>
+        <member name="M:NetModule.Messages.StringMsg.#ctor(System.String)">
+            <summary>
+            Use default encoding to encode the string.
+            </summary>
+            <param name="str">The string information.</param>
+        </member>
+        <member name="M:NetModule.Messages.StringMsg.#ctor(System.String,System.Text.Encoding)">
+            <summary>
+            Use specific encoding to encode the string.
+            </summary>
+            <param name="str">The string information.</param>
+            <param name="encoding">The encoding of the string.</param>
+        </member>
+        <member name="P:NetModule.Messages.StringMsg.InfoLength">
+            <summary>
+            The length of serialized byte array.
+            </summary>
+        </member>
+        <member name="M:NetModule.Messages.StringMsg.Deserialize(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Read the data between the start index and end index, and use the data to initialize the value of current instance.
+            </summary>
+            <param name="data">The data array.</param>
+            <param name="startIndex">The start index of useful data.</param>
+            <param name="endIndex">The end index of useful data.</param>
+            <returns>Whether the deserialization succeed.</returns>
+        </member>
+        <member name="M:NetModule.Messages.StringMsg.Serialize(System.Byte[]@,System.Int32)">
+            <summary>
+            Serialize this instance and write the byte data to buffer.
+            </summary>
+            <param name="buffer">The buffer to write in.</param>
+            <param name="startIndex">The start index of the buffer to write in. </param>
+            <returns>The count of bytes have written. </returns>
+        </member>
+        <member name="T:NetModule.Module.HeartMsg.HeartMsgModule">
+            <summary>
+            The manager of a heart message.
+            </summary>
+        </member>
+        <member name="P:NetModule.Module.HeartMsg.HeartMsgModule.IsTimeOut">
+            <summary>
+            Whether the remote is time out.
+            </summary>
+        </member>
+        <member name="P:NetModule.Module.HeartMsg.HeartMsgModule.IsClosed">
+            <summary>
+            If the thread of sending message is closed.
+            </summary>
+        </member>
+        <member name="M:NetModule.Module.HeartMsg.HeartMsgModule.#ctor(System.Net.Sockets.Socket,System.Int32)">
+            <summary>
+            To create a heart message manager with remote socket and time out time.
+            </summary>
+            <param name="socket">The remote socket to send and receive.</param>
+            <param name="milisecondsTimeOut">Miliseconds before the time out of remote.</param>
+        </member>
+        <member name="M:NetModule.Module.HeartMsg.HeartMsgModule.Refresh">
+            <summary>
+            The client received a message and to refresh the remote status.
+            </summary>
+        </member>
+        <member name="M:NetModule.Module.HeartMsg.HeartMsgModule.Lock(System.Action)">
+            <summary>
+            Lock the heart message module, and pass a call to present the process after locked.
+            The call will be executed in aysnc.
+            </summary>
+            <param name="call">A process call.</param>
+        </member>
+        <member name="M:NetModule.Module.HeartMsg.HeartMsgModule.Start">
+            <summary>
+            To start the thread of sending heart message. Not necessary to call if only to receive heart messages.
+            </summary>
+        </member>
+        <member name="M:NetModule.Module.HeartMsg.HeartMsgModule.Close">
+            <summary>
+            Close the module and the module cannot be reused.
+            </summary>
+        </member>
+        <member name="T:NetModule.Module.ModuleMode">
+            <summary>
+            The module mode of sending or receiving messages.
+            </summary>
+        </member>
+        <member name="F:NetModule.Module.ModuleMode.Send">
+            <summary>
+            The module can send the message to remote.
+            </summary>
+        </member>
+        <member name="F:NetModule.Module.ModuleMode.Receive">
+            <summary>
+            The module can receive the message from remote.
+            </summary>
+        </member>
+        <member name="F:NetModule.Module.ModuleMode.Both">
+            <summary>
+            The module can both send and receive messages.
+            </summary>
+        </member>
+        <member name="T:NetModule.Module.ModuleStatus">
+            <summary>
+            The current status of the module.
+            </summary>
+        </member>
+        <member name="F:NetModule.Module.ModuleStatus.Initialized">
+            <summary>
+            The module initialized internal data and wait for being started for first time.
+            </summary>
+        </member>
+        <member name="F:NetModule.Module.ModuleStatus.Connecting">
+            <summary>
+            The module has connected to remote.
+            </summary>
+        </member>
+        <member name="F:NetModule.Module.ModuleStatus.Closed">
+            <summary>
+            The module is closed and wait for being start again.
+            </summary>
+        </member>
+        <member name="T:NetModule.Module.INetModule">
+            <summary>
+            A interface of net module. Every net module contains these methods.
+            </summary>
+        </member>
+        <member name="E:NetModule.Module.INetModule.onError">
+            <summary>
+            A action called when error happened.
+            </summary>
+        </member>
+        <member name="P:NetModule.Module.INetModule.Remote">
+            <summary>
+            The remote ip end point.
+            </summary>
+        </member>
+        <member name="P:NetModule.Module.INetModule.CanSend">
+            <summary>
+            Whether the module can send messages.
+            </summary>
+        </member>
+        <member name="P:NetModule.Module.INetModule.CanReceive">
+            <summary>
+            Whether the module can receive messages.
+            </summary>
+        </member>
+        <member name="P:NetModule.Module.INetModule.Status">
+            <summary>
+            The current status of the module.
+            </summary>
+        </member>
+        <member name="P:NetModule.Module.INetModule.Available">
+            <summary>
+            The count of unread messages.
+            </summary>
+        </member>
+        <member name="P:NetModule.Module.INetModule.IsTimeOut">
+            <summary>
+            Whether the remote haven't send message for a time. 
+            </summary>
+        </member>
+        <member name="M:NetModule.Module.INetModule.Start">
+            <summary>
+            To start the module and connect to the remote.
+            </summary>
+            <exception cref="T:System.Net.Sockets.SocketException">An error occurred when attempting to access the socket.</exception>
+        </member>
+        <member name="M:NetModule.Module.INetModule.Close">
+            <summary>
+            To close the module and close the connection to the remote.
+            </summary>
+        </member>
+        <member name="M:NetModule.Module.INetModule.Send(NetModule.Messages.BaseMsg)">
+            <summary>
+            Send a message.
+            </summary>
+            <param name="msg">The message to be sent.</param>
+            <exception cref="T:System.InvalidOperationException">Thrown if the module is not connecting, -or- the module mode is not in send mode.</exception>
+        </member>
+        <member name="M:NetModule.Module.INetModule.Receive">
+            <summary>
+            Receive a earliest unread message.
+            </summary>
+            <returns> A earliest unread message, -or- null if there's no unread message.</returns>
+            <exception cref="T:System.InvalidOperationException">Thrown if the module is not in receive mode.</exception>
+        </member>
+        <member name="M:NetModule.Module.INetModule.ReceiveAll">
+            <summary>
+            Receive a earliest unread message.
+            </summary>
+            <returns> A earliest unread message, -or- null if there's no unread message.</returns>
+            <exception cref="T:System.InvalidOperationException">Thrown if the module is not in receive mode.</exception>
+        </member>
+        <member name="T:NetModule.Module.TcpModule">
+            <summary>
+            A instance of tcp module.
+            </summary>
+        </member>
+        <member name="E:NetModule.Module.TcpModule.onError">
+            <summary>
+            A action called when error happened.
+            </summary>
+        </member>
+        <member name="F:NetModule.Module.TcpModule.TIME_OUT_TIME">
+            <summary>
+            How many miliseconds are passed before the remote has time out.
+            </summary>
+        </member>
+        <member name="P:NetModule.Module.TcpModule.Remote">
+            <summary>
+            The remote ip end point.
+            </summary>
+        </member>
+        <member name="P:NetModule.Module.TcpModule.Available">
+            <summary>
+            The count of unread messages.
+            </summary>
+        </member>
+        <member name="P:NetModule.Module.TcpModule.IsTimeOut">
+            <summary>
+            Whether the remote haven't send message for a time. 
+            </summary>
+        </member>
+        <member name="P:NetModule.Module.TcpModule.CanSend">
+            <summary>
+            Whether the module can send messages.
+            </summary>
+        </member>
+        <member name="P:NetModule.Module.TcpModule.CanReceive">
+            <summary>
+            Whether the module can receive messages.
+            </summary>
+        </member>
+        <member name="P:NetModule.Module.TcpModule.Status">
+            <summary>
+            The current status of the module.
+            </summary>
+        </member>
+        <member name="M:NetModule.Module.TcpModule.#ctor(System.String,System.Int32,NetModule.Module.ModuleMode,System.Boolean)">
+            <summary>
+            To set the initial remote end point of this module.
+            </summary>
+            <param name="ipAddress">The ip address of remote end point.</param>
+            <param name="port">The port of remote end point.</param>
+            <param name="mode">The operation mode of module.</param>
+            <param name="activeHeartMsg">Whether to send heart message. </param>
+        </member>
+        <member name="M:NetModule.Module.TcpModule.#ctor(System.Net.Sockets.Socket,NetModule.Module.ModuleMode,System.Boolean)">
+            <summary>
+            Use a socket which already connected to remote to initialize the module.
+            </summary>
+            <param name="connectedSocket">A socket that is already connected to remote.</param>
+            <param name="mode">The mode of the module.</param>
+            <param name="activeHeartMsg">Whether to send heart message.</param>
+            <exception cref="T:System.InvalidOperationException"> The socket is not connected. </exception>
+        </member>
+        <member name="M:NetModule.Module.TcpModule.SocketReceive(System.Object)">
+            <summary>
+            A thread function to receive byte array.
+            </summary>
+        </member>
+        <member name="M:NetModule.Module.TcpModule.AnalysePackages(System.Int32)">
+            <summary>
+            处理分包 黏包问题
+            </summary>
+            <param name="length">长度</param>
+            <returns>从后往前数未解读的字节长度</returns>
+        </member>
+        <member name="M:NetModule.Module.TcpModule.Send(NetModule.Messages.BaseMsg)">
+            <summary>
+            Send a message.
+            </summary>
+            <param name="msg">The message to be sent.</param>
+            <exception cref="T:System.InvalidOperationException">Thrown if the module is not connecting, -or- the module mode is not in send mode.</exception>
+        </member>
+        <member name="M:NetModule.Module.TcpModule.Receive">
+            <summary>
+            Receive a earliest unread message.
+            </summary>
+            <returns> A earliest unread message, -or- null if there's no unread message.</returns>
+            <exception cref="T:System.InvalidOperationException">Thrown if the module is not in receive mode.</exception>
+        </member>
+        <member name="M:NetModule.Module.TcpModule.ReceiveAll">
+            <summary>
+            Receive a earliest unread message.
+            </summary>
+            <returns> A earliest unread message, -or- null if there's no unread message.</returns>
+            <exception cref="T:System.InvalidOperationException">Thrown if the module is not in receive mode.</exception>
+        </member>
+        <member name="M:NetModule.Module.TcpModule.Start">
+            <summary>
+            To start the module and connect to the remote.
+            </summary>
+            <exception cref="T:System.Net.Sockets.SocketException">An error occurred when attempting to access the socket.</exception>
+            <exception cref="T:System.InvalidOperationException">When module have already started.</exception>
+        </member>
+        <member name="M:NetModule.Module.TcpModule.Close">
+            <summary>
+            To close the module and disconnected to the remote.
+            </summary>
+            <exception cref="T:System.Net.Sockets.SocketException">An error occurred when attempting to access the socket.</exception>
+            <exception cref="T:System.InvalidOperationException">When the module haven't started yet.</exception>
+        </member>
+        <member name="T:NetModule.Module.UdpModule">
+            <summary>
+            Udp module.
+            </summary>
+        </member>
+        <member name="P:NetModule.Module.UdpModule.Remote">
+            <summary>
+            The remote ip end point.
+            </summary>
+        </member>
+        <member name="P:NetModule.Module.UdpModule.CanSend">
+            <summary>
+            Whether the module can send messages.
+            </summary>
+        </member>
+        <member name="P:NetModule.Module.UdpModule.CanReceive">
+            <summary>
+            Whether the module can receive messages.
+            </summary>
+        </member>
+        <member name="P:NetModule.Module.UdpModule.Status">
+            <summary>
+            The current status of the module.
+            </summary>
+        </member>
+        <member name="P:NetModule.Module.UdpModule.Available">
+            <summary>
+            The count of the unread messages.
+            </summary>
+        </member>
+        <member name="P:NetModule.Module.UdpModule.IsTimeOut">
+            <summary>
+            Whether the remote haven't sent message for a time.
+            </summary>
+        </member>
+        <member name="E:NetModule.Module.UdpModule.onError">
+            <summary>
+            A action called when error occurred.
+            </summary>
+        </member>
+        <member name="M:NetModule.Module.UdpModule.#ctor(System.Net.IPEndPoint,System.Net.IPEndPoint,NetModule.Module.ModuleMode)">
+            <summary>
+            To initialize the module with remote end point and a mode.
+            </summary>
+            <param name="local"> The local end point.</param>
+            <param name="remote">The remote end point.</param>
+            <param name="mode">The mode of the module.</param>
+        </member>
+        <member name="M:NetModule.Module.UdpModule.Send(NetModule.Messages.BaseMsg)">
+            <summary>
+            Send a message.
+            </summary>
+            <param name="msg">The message to be sent.</param>
+            <exception cref="T:System.InvalidCastException">Thrown when module is not in send mode.</exception>
+        </member>
+        <member name="M:NetModule.Module.UdpModule.Receive">
+            <summary>
+            Receive a unread message.
+            </summary>
+            <returns>A unread message, -or- null if there's no unread message.</returns>
+            <exception cref="T:System.InvalidOperationException">Thrown if the module is not in receive mode.</exception>
+        </member>
+        <member name="M:NetModule.Module.UdpModule.ReceiveAll">
+            <summary>
+            Return all unread messages.
+            </summary>
+            <returns>All unread messages, -or- null if there's no unread message.</returns>
+            <exception cref="T:System.InvalidOperationException">Thrown if the module is not in receive mode.</exception>
+        </member>
+        <member name="M:NetModule.Module.UdpModule.Start">
+            <summary>
+            To start the module.
+            </summary>
+        </member>
+        <member name="M:NetModule.Module.UdpModule.Close">
+            <summary>
+            To close the module.
+            </summary>
+        </member>
+    </members>
+</doc>

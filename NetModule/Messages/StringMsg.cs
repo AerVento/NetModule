@@ -9,12 +9,21 @@ namespace NetModule.Messages
     /// </summary>
     public class StringMsg : BaseMsg
     {
+        /// <summary>
+        /// The byte data of string.
+        /// </summary>
         protected byte[] datas;
+        /// <summary>
+        /// The encoding of the string.
+        /// </summary>
         protected Encoding encoding;
         /// <summary>
         /// The string information.
         /// </summary>
         public string String => encoding.GetString(datas);
+        /// <summary>
+        /// For activator use only.
+        /// </summary>
         protected StringMsg()
         {
 
@@ -38,9 +47,17 @@ namespace NetModule.Messages
             this.encoding = encoding;
             this.datas = encoding.GetBytes(str);
         }
-
+        /// <summary>
+        /// The length of serialized byte array.
+        /// </summary>
         public override ushort InfoLength => (ushort)(sizeof(int) + datas.Length);
-
+        /// <summary>
+        /// Read the data between the start index and end index, and use the data to initialize the value of current instance.
+        /// </summary>
+        /// <param name="data">The data array.</param>
+        /// <param name="startIndex">The start index of useful data.</param>
+        /// <param name="endIndex">The end index of useful data.</param>
+        /// <returns>Whether the deserialization succeed.</returns>
         public override bool Deserialize(byte[] data,int startIndex, int endIndex)
         {
             try
@@ -64,13 +81,19 @@ namespace NetModule.Messages
                 throw exception;
             }
         }
-
+        /// <summary>
+        /// Serialize this instance and write the byte data to buffer.
+        /// </summary>
+        /// <param name="buffer">The buffer to write in.</param>
+        /// <param name="startIndex">The start index of the buffer to write in. </param>
+        /// <returns>The count of bytes have written. </returns>
         public override int Serialize(ref byte[] buffer, int startIndex)
         {
             BitConverter.GetBytes(encoding.CodePage).CopyTo(buffer, startIndex);
             Array.Copy(datas, 0, buffer, startIndex + sizeof(int), datas.Length);
             return sizeof(int) + datas.Length;
         }
+
 
         public static implicit operator string(StringMsg msg) => msg.String;
         public static implicit operator StringMsg(string str) => new StringMsg(str);

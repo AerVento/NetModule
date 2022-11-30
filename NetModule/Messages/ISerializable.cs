@@ -27,7 +27,7 @@ namespace NetModule.Messages
         /// <param name="data">The data array.</param>
         /// <param name="startIndex">The start index of useful data.</param>
         /// <param name="endIndex">The end index of useful data.</param>
-        /// <returns></returns>
+        /// <returns>Whether the deserialization succeed.</returns>
         public bool Deserialize(byte[] data,int startIndex,int endIndex);
     }
 }

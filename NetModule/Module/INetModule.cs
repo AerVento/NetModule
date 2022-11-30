@@ -69,7 +69,7 @@ namespace NetModule.Module
         /// </summary>
         public ModuleStatus Status { get; }
         /// <summary>
-        /// The count of unread messages.
+        /// The count of bytes of unread messages.
         /// </summary>
         public int Available { get; }
         /// <summary>

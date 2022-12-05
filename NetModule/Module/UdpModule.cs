@@ -1,4 +1,6 @@
 ﻿ using NetModule.Messages;
+using NetModule.Module.Internal.Dgram;
+using NetModule.Module.Internal.Receiver;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -11,15 +13,19 @@ namespace NetModule.Module
     /// <summary>
     /// Udp module.
     /// </summary>
-    public class UdpModule : INetModule
+    public class UdpModule
     {
         private ModuleStatus status;
 
         private ModuleMode mode;
 
         private UdpClient client;
-        
+
+        private DgramReceiver receiver;
+
         private IPEndPoint remote;
+
+
         /// <summary>
         /// The remote ip end point.
         /// </summary>
@@ -32,34 +38,30 @@ namespace NetModule.Module
         /// Whether the module can receive messages.
         /// </summary>
         public bool CanReceive => mode == ModuleMode.Both || mode == ModuleMode.Receive;
+        
         /// <summary>
         /// The current status of the module.
         /// </summary>
         public ModuleStatus Status => status;
+        
         /// <summary>
-        /// The count of bytes of unread messages.
+        /// The count of  unread messages.
         /// </summary>
-        public int Available => client.Available;
-        /// <summary>
-        /// Whether the remote haven't sent message for a time.
-        /// </summary>
-        public bool IsTimeOut => false;//Udp connection do not need to be time out.
-        /// <summary>
-        /// A action called when error occurred.
-        /// </summary>
-        public event Action<Exception> onError;
+        public Task<int> Count => receiver.GetCount();
+
         /// <summary>
         /// To initialize the module with remote end point and a mode.
         /// </summary>
         /// <param name="local"> The local end point.</param>
         /// <param name="remote">The remote end point.</param>
         /// <param name="mode">The mode of the module.</param>
-        public UdpModule(IPEndPoint local,IPEndPoint remote, ModuleMode mode)
+        public UdpModule(IPEndPoint local, IPEndPoint remote, ModuleMode mode)
         {
             this.remote = remote;
-            client = new UdpClient(local);
-            status = ModuleStatus.Initialized;
             this.mode = mode;
+            client = new UdpClient(local);
+            receiver = new DgramReceiver(new SocketDgram(local, remote));
+            status = ModuleStatus.Initialized;
         }
 
         /// <summary>
@@ -88,14 +90,11 @@ namespace NetModule.Module
         /// </summary>
         /// <returns>A unread message, -or- null if there's no unread message.</returns>
         /// <exception cref="InvalidOperationException">Thrown if the module is not in receive mode.</exception>
-        public BaseMsg Receive()
+        public Task<BaseMsg> Receive()
         {
             if (CanReceive)
             {
-                if (client.Available > 0)
-                    return BaseMsg.GetInstance(client.Receive(ref remote));
-                else
-                    return null;
+                return receiver.Receive();
             }
             else
                 throw new InvalidOperationException("The module is not in receive mode.");
@@ -109,35 +108,10 @@ namespace NetModule.Module
         {
             if (CanReceive)
             {
-                if (client.Available > 0)
-                {
-                    int count = client.Available;
-                    BaseMsg[] arr = new BaseMsg[count];
-                    for (int i = 0; i < count; i++)
-                    {
-                        arr[i] = BaseMsg.GetInstance(client.Receive(ref remote));
-                    }
-                    return arr;
-                }
-                else
-                    return null;
+                return receiver.ReceiveAll();
             }
             else
                 throw new InvalidOperationException("The module is not in receive mode.");
-        }
-        /// <summary>
-        /// To start the module.
-        /// </summary>
-        public void Start()
-        {
-            status = ModuleStatus.Connecting;
-        }
-        /// <summary>
-        /// To close the module.
-        /// </summary>
-        public void Close()
-        {
-            status = ModuleStatus.Closed;
         }
     }
 }

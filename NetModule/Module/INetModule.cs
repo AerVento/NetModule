@@ -45,6 +45,7 @@ namespace NetModule.Module
     /// <summary>
     /// A interface of net module. Every net module contains these methods.
     /// </summary>
+    [Obsolete("Not available in future version.")]
     public interface INetModule
     {
         /// <summary>

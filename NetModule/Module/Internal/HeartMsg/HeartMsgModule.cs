@@ -5,12 +5,12 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace NetModule.Module.HeartMsg
+namespace NetModule.Module.Internal.HeartMsg
 {
     /// <summary>
     /// The manager of a heart message.
     /// </summary>
-    public class HeartMsgModule
+    internal class HeartMsgModule
     {
         private Socket remoteSocket;
         private DateTime lastReceivedTime = DateTime.Now;

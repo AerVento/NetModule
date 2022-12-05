@@ -537,6 +537,18 @@
             <param name="startIndex">The start index of the buffer to write in. </param>
             <returns>The count of bytes have written. </returns>
         </member>
+        <member name="T:NetModule.Messages.NullMsg">
+            <summary>
+            A message to mark the useless message.
+            Only can be discovered in Receive() methods when receiving a message.
+            </summary>
+        </member>
+        <member name="M:NetModule.Messages.NullMsg.op_Implicit(NetModule.Messages.NullMsg)~NetModule.Messages.BaseMsg[]">
+            <summary>
+            static operator
+            </summary>
+            <param name="msg"></param>
+        </member>
         <member name="T:NetModule.Messages.SendingProtocol.FormProtocol">
             <summary>
             Use extra data to define a protocol when passing information.
@@ -830,6 +842,18 @@
             <returns> A earliest unread message, -or- null if there's no unread message.</returns>
             <exception cref="T:System.InvalidOperationException">Thrown if the module is not in receive mode.</exception>
         </member>
+        <member name="M:NetModule.Module.Internal.Stream.IStream.Read">
+            <summary>
+            Read a byte from stream.
+            </summary>
+            <returns>The byte of stream, or -1 when end of stream is reached.</returns>
+        </member>
+        <member name="M:NetModule.Module.Internal.Stream.IStream.ReadAll">
+            <summary>
+            Read all bytes from stream.
+            </summary>
+            <returns>The byte array of all bytes in the stream.</returns>
+        </member>
         <member name="T:NetModule.Module.TcpModule">
             <summary>
             A instance of tcp module.
@@ -837,7 +861,7 @@
         </member>
         <member name="E:NetModule.Module.TcpModule.onError">
             <summary>
-            A action called when error happened.
+            A action called when error happened. Often used to print out the exception.
             </summary>
         </member>
         <member name="F:NetModule.Module.TcpModule.TIME_OUT_TIME">
@@ -850,9 +874,9 @@
             The remote ip end point.
             </summary>
         </member>
-        <member name="P:NetModule.Module.TcpModule.Available">
+        <member name="P:NetModule.Module.TcpModule.Count">
             <summary>
-            The count of bytes of unread messages.
+            The count of unread messages.
             </summary>
         </member>
         <member name="P:NetModule.Module.TcpModule.IsTimeOut">
@@ -893,29 +917,12 @@
             <param name="activeHeartMsg">Whether to send heart message.</param>
             <exception cref="T:System.InvalidOperationException"> The socket is not connected. </exception>
         </member>
-        <member name="M:NetModule.Module.TcpModule.SocketReceive">
-            <summary>
-            Rececive byte array and analyse it to a message instance.
-            </summary>
-        </member>
-        <member name="M:NetModule.Module.TcpModule.AnalysePackages(System.Int32)">
-            <summary>
-            处理分包 黏包问题
-            </summary>
-            <param name="length">长度</param>
-            <returns>从后往前数未解读的字节长度</returns>
-        </member>
         <member name="M:NetModule.Module.TcpModule.Send(NetModule.Messages.BaseMsg)">
             <summary>
             Send a message.
             </summary>
             <param name="msg">The message to be sent.</param>
             <exception cref="T:System.InvalidOperationException">Thrown if the module is not connecting, -or- the module mode is not in send mode.</exception>
-        </member>
-        <member name="M:NetModule.Module.TcpModule.RefreshMsg">
-            <summary>
-            To turn message cache to message.
-            </summary>
         </member>
         <member name="M:NetModule.Module.TcpModule.Receive">
             <summary>

@@ -14,6 +14,7 @@ namespace NetModule.Module.Internal.Receiver
         private byte[] receivingCaches = new byte[cacheBufferSize];
         private int cacheIndex = 0;
         private Queue<BaseMsg> receivedMsgs = new Queue<BaseMsg>();
+        public event Action<BaseMsg> OnReceived;
         public StreamReceiver(IStream stream)
         {
             this.stream = stream;
@@ -60,7 +61,7 @@ namespace NetModule.Module.Internal.Receiver
                     return length - index;
 
                 BaseMsg msg = BaseMsg.GetInstance(receivingCaches, index, lengthValue);
-
+                OnReceived?.Invoke(msg);
                 receivedMsgs.Enqueue(msg);
                 index += lengthValue;
             }

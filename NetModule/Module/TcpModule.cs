@@ -91,6 +91,8 @@ namespace NetModule.Module
                 socket = connectedSocket;
                 remote = connectedSocket.RemoteEndPoint as IPEndPoint;
                 receiver = new StreamReceiver(new SocketStream(connectedSocket));
+                receiver.OnReceived += (msg) => heartMsgManager.Refresh();
+                
                 isSendingHeartMsgActivated = activeHeartMsg;
                 heartMsgManager = new HeartMsgModule(socket, TIME_OUT_TIME);
                 
@@ -212,6 +214,7 @@ namespace NetModule.Module
                     case ModuleStatus.Initialized:
                         socket.Connect(remote);
                         receiver = new StreamReceiver(new SocketStream(socket));
+                        receiver.OnReceived += (msg) => heartMsgManager.Refresh();
                         if (isSendingHeartMsgActivated && heartMsgManager.IsClosed)
                             heartMsgManager.Start();
                         status = ModuleStatus.Connecting;
